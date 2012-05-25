@@ -61,5 +61,11 @@ module LicenceFinder
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    if ENV['GOVUK_HTTPUSER'].present?
+      config.middleware.insert_after(::Rack::Lock, "::Rack::Auth::Basic", "Restricted") do |u, p|
+        u == ENV['GOVUK_HTTPUSER'] && p == ENV['GOVUK_HTTPPASS']
+      end
+    end
   end
 end
