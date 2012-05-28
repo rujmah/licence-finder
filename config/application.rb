@@ -63,7 +63,7 @@ module LicenceFinder
     config.assets.version = '1.0'
 
     if ENV['GOVUK_HTTPUSER'].present?
-      config.middleware.insert_after(::Rack::Lock, "::Rack::Auth::Basic", "Restricted") do |u, p|
+      config.middleware.insert_before(0, "::Rack::Auth::Basic", "Restricted") do |u, p|
         u == ENV['GOVUK_HTTPUSER'] && p == ENV['GOVUK_HTTPPASS']
       end
     end
