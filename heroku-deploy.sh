@@ -4,7 +4,7 @@ CURRENT_BRANCH=$(git symbolic-ref -q HEAD)
 CURRENT_BRANCH=${CURRENT_BRANCH##refs/heads/}
 
 case $CURRENT_BRANCH in
-  user-test-[1-3])
+  user-test-[1-4])
     # Nothing
     ;;
   *)
