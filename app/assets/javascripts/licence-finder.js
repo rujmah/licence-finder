@@ -33,31 +33,31 @@ $(function() {
     }
 
     function createNextUrl() {
-        var ids = extractIds();
-        var params = extractParams();
-        var url;
+        var ids = extractIds(),
+            params = extractParams(),
+            next, query;
         if (pageName() == "sectors") {
-            url = window.location.pathname.replace("/sectors", "/activities");
-            url += "?sectors=" + ids.join("_");
+            next = "/activities";
+            query = "sectors=" + ids.join("_");
         } else {
-            url = window.location.pathname.replace("/activities", "/location");
-            url += "?sectors=" + params["sectors"] + "&activities=" + ids.join("_");
+            next = "/location";
+            query = "sectors=" + params["sectors"] + "&activities=" + ids.join("_");
         }
 
-        return url;
+        return window.location.pathname.replace("/"+pageName(), next) + "?" + query;
     }
 
     // Move a list item from one list to another.
     function swapper(event) {
         event.preventDefault();
         var oldli = $(this).parent(), // the list item that is being moved
-            newli = $('<li data-public-id="' + oldli.data("public-id") + '"></li>'), // the target list element
-            source = $(event.delegateTarget), // container for list that element is coming from
-            target = $(event.data.target), // container for list that element is going to
+            newli = $('<li data-public-id="' + oldli.data("public-id") + '"></li>'), // the target list item
+            source = $(event.delegateTarget), // container for list that item is coming from
+            target = $(event.data.target), // container for list that item is going to
             targetList = $("ul", target);
 
-        newli.append(oldli.find("span:first"))
-             .append(" ")
+        // move the item
+        newli.append(oldli.find("span:first")).append(" ")
              .append($('<a href="">' + event.data.linkText + '</a>'));
         targetList.append(newli);
         $('li', targetList).each(function() {
@@ -65,6 +65,7 @@ $(function() {
         });
         oldli.remove();
 
+        // sort the target list if required
         if (event.data.sortTarget) {
             var newlis = $('>li', targetList);
             newlis.remove();
@@ -75,7 +76,8 @@ $(function() {
             targetList.append(newlis);
         }
 
-        if (event.data.linkText == "Remove") {
+        // update links and forms to reflect the move
+        if (event.data.target == ".picked-items") {
             $(".hint", target).removeClass("hint").addClass("hidden");
             if ($("#next-step").length == 0) {
                 target.append('<a href="" class="button medium" id="next-step">Next step</a>');
@@ -93,9 +95,15 @@ $(function() {
 
     function init() {
         // event handler to add a list item to the picked list.
-        $(".search-picker").on("click", "li a", {linkText: "Remove", target: ".picked-items", sortTarget: true}, swapper);
+        $(".search-picker").on("click", "li a",
+            {linkText: "Remove", target: ".picked-items", sortTarget: true},
+            swapper
+        );
         // event handler to remove a list item from the picked list.
-        $(".picked-items").on("click", "li a", {linkText: "Add", target: ".search-picker"}, swapper);
+        $(".picked-items").on("click", "li a",
+            {linkText: "Add", target: ".search-picker", sortTarget: pageName() == "activities"},
+            swapper
+        );
     }
 
     init();
