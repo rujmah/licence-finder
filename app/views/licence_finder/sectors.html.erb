@@ -26,24 +26,21 @@
       <%= link_to "Search for more", {sectors: params[:sectors]}, {class: "button", id:"search-again-button"} %>
     </div>
   <% end %>
-  <%= form_tag sectors_path do %>
-    <div class="business-sector-picked picked-items" aria-live="polite">
-      <h3>Your chosen sectors</h3>
-      <p class="<% if @picked_sectors.empty? %>hint<% else %>hidden<% end %>">Your chosen sectors will appear here</p>
-      <ul id="picked-business-sectors">
-        <% @picked_sectors.each do |sector| %>
-          <li data-public-id="<%= sector.public_id %>">
-            <%= hidden_field_tag 'sector_ids[]', sector.public_id, id: "sector_id_#{sector.public_id}" %>
-            <span class="sector-name" ><%= sector.name %></span>
-            <%= link_to_remove sector %>
-          </li>
-        <% end %>
-      </ul>
-      <% unless @picked_sectors.empty? %>
-        <%= link_to 'Next step', activities_path(sectors: params[:sectors]), class: 'button medium', id: "next-step"  %>
+  <div class="business-sector-picked picked-items" aria-live="polite">
+    <h3>Your chosen sectors</h3>
+    <p class="<% if @picked_sectors.empty? %>hint<% else %>hidden<% end %>">Your chosen sectors will appear here</p>
+    <ul id="picked-business-sectors">
+      <% @picked_sectors.each do |sector| %>
+        <li data-public-id="<%= sector.public_id %>">
+          <span class="sector-name" ><%= sector.name %></span>
+          <%= link_to_remove sector %>
+        </li>
       <% end %>
-    </div>
-  <% end %>
+    </ul>
+    <% unless @picked_sectors.empty? %>
+      <%= link_to 'Next step', activities_path(sectors: params[:sectors]), class: 'button medium', id: "next-step"  %>
+    <% end %>
+  </div>
 <% end %>
 
 <%= render partial: 'upcoming_questions' %>
