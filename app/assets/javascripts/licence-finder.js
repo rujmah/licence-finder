@@ -1,149 +1,21 @@
 $(function() {
-
-	var section,
-		pluralSection;
-
-	/* Add one thing to another thing, alphabetically */
-	function swapList(elem, targetList, state){
-		if($(".business-"+section+"-picked ul").length == 0){
-            var next_url = $(".business-"+section+"-picked").data("next-url");
-            var picked_sectors = '<ul id="picked-business-sectors"></ul><a href="' + next_url + '" class="button medium" id="next-step">Next step</a>';
-			$(picked_sectors).insertAfter(".business-"+section+"-picked h3");
-			$(".hint").css("display", "none");
-            setupEvents();
-		}
-
-		var id = $(elem).attr("href").split(pluralSection+"="),
-            toAdd = null;
-		if(id[1].indexOf("_")){
-			id = id[1].split("_");
-			id = id[0];
-		} else {
-			id = id[1];
-		}
-
-		if(id.indexOf("&")){
-			id = id.split("&");
-			id = id[0];
-		}
-
-		var plainTextTitle = $(elem).parent().children("span").text();
-
-		if(state == "add"){
-			toAdd = "<li data-public-id='" + id + "'><span class='"+section+"-name'>"+plainTextTitle+"</span> <a href='/licence-finder/"+pluralSection+"?"+pluralSection+"="+id+"'>Remove</a></li>";
-		}
-		else{
-			toAdd = "<li><span class='"+section+"-name'>"+plainTextTitle+"</span> <a href='/licence-finder/"+pluralSection+"?"+pluralSection+"="+id+"'>Add</a></li>";
-		}
-
-        var added = false;
-        var targetListItems = $(targetList+" li");
-
-        $(targetListItems).each(function(){
-            if($(this).text() > plainTextTitle){
-                $(toAdd).insertBefore($(this));
-                added = true;
-                return false;
-            }
-        });
-
-        if(!added) $(toAdd).appendTo(targetList);
-        $(elem).parent().remove();
-        setupEvents();
-	};
-
-
-	function setupEvents(){
-		$(".business-"+section+"-picked a").off("click");
-		$(".business-"+section+"-picked a").on("click", function(){
-			swapList(this, ".search-picker", "remove");
-			return false;
-		});
-		$(".search-picker a").off("click");
-        $(".search-picker a").on("click", function(){
-			swapList(this, ".business-"+section+"-picked ul", "add");
-			return false;
-		});
-        $("#next-step,#search-again-button").off("click");
-        $("#next-step,#search-again-button").on("click", function(event) {
-            event.preventDefault();
-            var href = this.href,
-                ids  = $.makeArray(
-                    $(".business-" + section + "-picked li").map(function(i, item) { return $(item).attr("data-public-id")})
-                ).join("_"),
-                params = {};
-            $(href.substr(href.indexOf("?") + 1).split("&")).each(function() {
-                var keyval = this.split("=");
-                params[keyval[0]] = keyval[1];
-            });
-            params[pluralSection] = ids;
-            if (href.indexOf("?") != -1) {
-                href = href.substring(0, href.indexOf("?"));
-            }
-            window.location = href + "?" + $.param(params);
-
-        });
-        // this handles adding/removing logic:
-        // adding the initial elements is handled in the swapList function
-        var picked = $(".business-"+section+"-picked");
-        if (picked.find('.hint').length == 0) {
-            var el = $('<p class="hint">Your chosen sectors will appear here</p>');
-            $(".business-"+section+"-picked").append(el);
-        }
-        picked = picked.find("ul");
-        if (picked.length > 0 && picked.find('li').length == 0) {
-            $('.hint').removeAttr('style');
-            $("#next-step").css('display', 'none');
-        }
-        else if (picked.length > 0 && picked.find('li').length > 0) {
-            $('.hint').css('display', 'none');
-            $("#next-step").removeAttr('style');
-        }
-	};
-
-    function setupSearchForMore() {
-        $("#search-again-button").off("click");
-        $("#search-again-button").on("click", function() {
-            var sectors = $.makeArray(
-                $("#picked-business-sectors input").map(function(i, item) {
-                    return item.value;
-                })
-            ).join("_");
-            window.location.search = "sectors=" + sectors;
-
-            return false;
-        });
+    function pageName() {
+        return window.location.pathname.split("/").pop();
     }
 
-	function init(){
-		if($(".business-sector-picked").length > 0){
-			section = "sector";
-			pluralSection = "sectors"
-		}
-		else{
-			section = "activity";
-			pluralSection = "activities";
-		}
-
-
-		setupEvents();
-        setupSearchForMore();
-
-	};
-
-
-//	init();
     function extractIds() {
         return $.makeArray(
             $(".picked-items li[data-public-id]").map(function(i, li) { return $(li).data("public-id"); })
         );
     }
+
     function extractParams() {
         var params = {};
         $(window.location.search.substr(1).split('&')).each(function(i, pair)  {
             pair = pair.split('=');
             params[pair[0]] = pair[1];
         });
+
         return params;
     }
 
@@ -155,7 +27,8 @@ $(function() {
         } else {
             ids.splice(ids.indexOf(id), 1);
         }
-        params[window.location.pathname.split("/").pop()] = ids.join("_");
+        params[pageName()] = ids.join("_");
+
         return window.location.pathname + "?" + $.param(params);
     }
 
@@ -163,7 +36,7 @@ $(function() {
         var ids = extractIds();
         var params = extractParams();
         var url;
-        if (window.location.pathname.indexOf("/sectors") > -1) {
+        if (pageName() == "sectors") {
             url = window.location.pathname.replace("/sectors", "/activities");
             url += "?sectors=" + ids.join("_");
         } else {
@@ -174,18 +47,16 @@ $(function() {
         return url;
     }
 
+    // Move a list item from one list to another.
     function swapper(event) {
         event.preventDefault();
-        var oldli = $(this).parent(),
-            publicId = oldli.data("public-id"),
-            name = oldli.find("span:first"),
-            newli = $('<li data-public-id="' + publicId + '"></li>'),
-            source = $(event.delegateTarget),
-            target = $(event.data.target),
+        var oldli = $(this).parent(), // the list item that is being moved
+            newli = $('<li data-public-id="' + oldli.data("public-id") + '"></li>'), // the target list element
+            source = $(event.delegateTarget), // container for list that element is coming from
+            target = $(event.data.target), // container for list that element is going to
             targetList = $("ul", target);
 
-
-        newli.append(name)
+        newli.append(oldli.find("span:first"))
              .append(" ")
              .append($('<a href="">' + event.data.linkText + '</a>'));
         targetList.append(newli);
@@ -214,11 +85,16 @@ $(function() {
             $("#next-step").remove();
         }
         $("#next-step").attr("href", createNextUrl());
-
+        if (pageName() == "sectors") {
+            $("#search-again-button").attr("href", window.location.pathname + "?sectors=" + extractIds().join("_"));
+            $("#hidden-sectors").attr("value", extractIds().join("_"));
+        }
     }
 
     function init() {
+        // event handler to add a list item to the picked list.
         $(".search-picker").on("click", "li a", {linkText: "Remove", target: ".picked-items", sortTarget: true}, swapper);
+        // event handler to remove a list item from the picked list.
         $(".picked-items").on("click", "li a", {linkText: "Add", target: ".search-picker"}, swapper);
     }
 
