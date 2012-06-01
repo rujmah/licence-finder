@@ -1,7 +1,5 @@
 $(function() {
-    function pageName() {
-        return window.location.pathname.split("/").pop();
-    }
+    var pageName = window.location.pathname.split("/").pop();
 
     function extractIds() {
         return $.makeArray(
@@ -27,7 +25,7 @@ $(function() {
         } else {
             ids.splice(ids.indexOf(id), 1);
         }
-        params[pageName()] = ids.join("_");
+        params[pageName] = ids.join("_");
 
         return window.location.pathname + "?" + $.param(params);
     }
@@ -36,7 +34,7 @@ $(function() {
         var ids = extractIds(),
             params = extractParams(),
             next, query;
-        if (pageName() == "sectors") {
+        if (pageName == "sectors") {
             next = "/activities";
             query = "sectors=" + ids.join("_");
         } else {
@@ -44,7 +42,7 @@ $(function() {
             query = "sectors=" + params["sectors"] + "&activities=" + ids.join("_");
         }
 
-        return window.location.pathname.replace("/"+pageName(), next) + "?" + query;
+        return window.location.pathname.replace("/"+pageName, next) + "?" + query;
     }
 
     // Move a list item from one list to another.
@@ -87,25 +85,20 @@ $(function() {
             $("#next-step").remove();
         }
         $("#next-step").attr("href", createNextUrl());
-        if (pageName() == "sectors") {
+        if (pageName == "sectors") {
             $("#search-again-button").attr("href", window.location.pathname + "?sectors=" + extractIds().join("_"));
             $("#hidden-sectors").attr("value", extractIds().join("_"));
         }
     }
 
-    function init() {
-        // event handler to add a list item to the picked list.
-        $(".search-picker").on("click", "li a",
-            {linkText: "Remove", target: ".picked-items", sortTarget: true},
-            swapper
-        );
-        // event handler to remove a list item from the picked list.
-        $(".picked-items").on("click", "li a",
-            {linkText: "Add", target: ".search-picker", sortTarget: pageName() == "activities"},
-            swapper
-        );
-    }
-
-    init();
-
+    // event handler to add a list item to the picked list.
+    $(".search-picker").on("click", "li a",
+        {linkText: "Remove", target: ".picked-items", sortTarget: true},
+        swapper
+    );
+    // event handler to remove a list item from the picked list.
+    $(".picked-items").on("click", "li a",
+        {linkText: "Add", target: ".search-picker", sortTarget: pageName == "activities"},
+        swapper
+    );
 });
