@@ -81,30 +81,20 @@ class LicenceFinderController < ApplicationController
 
   def browse_sector_index
     # return list of top-level sectors
-    @sectors = SECTORS.select do |key, value|
-      value[:parent].nil?
-    end
-  end
+    @sectors = Sector.find_layer1_sectors().to_a
+ end
 
   def browse_sector
     # return list of children of "sector"
-    @current_sectors = SECTORS.select do |key, value|
-      value[:slug] == params[:sector]
-    end
-
-    @current_sector_id, @current_sector = @current_sectors.first
-
-    @sectors = SECTORS.select do |key, value|
-      value[:parent] == @current_sector_id
-    end
+    @sector = Sector.find_by_public_id(params[:sector])
+    @sectors = @sector.children
   end
 
-  def browse_sector_child(sector_parent, sector)
+  def browse_sector_child
     # return list of children of "sector"
-  end
-
-  def browse_sector_grandchild(sector_grandparent, sector_parent, sector)
-
+    @sector = Sector.find_by_public_id(params[:sector])
+    @sectors = @sector.children
+    @parent = Sector.find_by_public_id(params[:sector_parent])
   end
 
   protected

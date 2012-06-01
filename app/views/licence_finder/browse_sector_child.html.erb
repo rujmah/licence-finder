@@ -1,0 +1,17 @@
+<div class="article-container">
+  <article class="results">
+    <div class="inner group">
+      <h2><%= @sector.name %></h2>
+
+      <% if @sectors.empty? %>
+        <p>No sectors</p>
+      <% else %>
+      <ul>
+        <% @sectors.each do |sector| %>
+          <li><%= sector.name %></li>
+        <% end %>
+      </ul>
+      <% end %>
+    </div>
+  </article>
+</div>
