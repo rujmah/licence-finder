@@ -12,6 +12,10 @@ LicenceFinder::Application.routes.draw do
   get "#{APP_SLUG}/location" => "licence_finder#business_location", :as => :business_location
   post "#{APP_SLUG}/location" => "licence_finder#business_location_submit", :as => :business_location_submit
   get "#{APP_SLUG}/licences" => "licence_finder#licences", :as => :licences
+  get "#{APP_SLUG}/browse-sectors" => "licence_finder#browse_sector_index"
+  get "#{APP_SLUG}/browse-sectors/:sector" => "licence_finder#browse_sector"
+  get "#{APP_SLUG}/browse-sectors/:sector_parent/:sector" => "licence_finder#browse_sector_child"
+  get "#{APP_SLUG}/browse-sectors/:sector_grandparent/:sector_parent/:sector" => "licence_finder#browse_sector_grandchild"
 
   root :to => redirect("/#{APP_SLUG}", :status => 302)
 

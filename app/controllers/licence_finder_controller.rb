@@ -10,8 +10,8 @@ class LicenceFinderController < ApplicationController
   ]
   ACTIONS = %w(sectors activities business_location)
 
-  before_filter :extract_and_validate_sector_ids, :except => [:start, :sectors]
-  before_filter :extract_and_validate_activity_ids, :except => [:start, :sectors, :sectors_submit, :activities]
+  before_filter :extract_and_validate_sector_ids, :except => [:start, :sectors, :browse_sector_index, :browse_sectors, :browse_sector_child, :browse_sector_grandchild]
+  before_filter :extract_and_validate_activity_ids, :except => [:start, :sectors, :sectors_submit, :activities, :browse_sector_index, :browse_sectors, :browse_sector_child, :browse_sector_grandchild]
   before_filter :set_analytics_headers
 
   def start
@@ -56,6 +56,22 @@ class LicenceFinderController < ApplicationController
     @location = params[:location]
     @licences = Licence.find_by_sectors_activities_and_location(@sectors, @activities, params[:location])
     setup_questions [@sectors, @activities, [@location.titleize]]
+  end
+
+  def browse_sector_index
+    # return list of top-level sectors
+  end
+
+  def browse_sector(sector)
+    # return list of children of "sector"
+  end
+
+  def browse_sector_child(sector_parent, sector)
+    # return list of children of "sector"
+  end
+
+  def browse_sector_grandchild(sector_grandparent, sector_parent, sector)
+
   end
 
   protected
