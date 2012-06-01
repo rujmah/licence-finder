@@ -58,12 +58,45 @@ class LicenceFinderController < ApplicationController
     setup_questions [@sectors, @activities, [@location.titleize]]
   end
 
+  SECTORS = {
+    "1" => {
+      name: "Sector 1",
+      slug: "sector-1"
+    },
+    "2" => {
+      name: "Sector 2",
+      slug: "sector-2"
+    },
+    "3" => {
+      name: "Child sector 1",
+      parent: "1",
+      slug: "child-sector-1"
+    },
+    "4" => {
+      name: "Grandchild sector 1",
+      parent: "3",
+      slug: "grandchild-sector-1"
+    }
+  }
+
   def browse_sector_index
     # return list of top-level sectors
+    @sectors = SECTORS.select do |key, value|
+      value[:parent].nil?
+    end
   end
 
-  def browse_sector(sector)
+  def browse_sector
     # return list of children of "sector"
+    @current_sectors = SECTORS.select do |key, value|
+      value[:slug] == params[:sector]
+    end
+
+    @current_sector_id, @current_sector = @current_sectors.first
+
+    @sectors = SECTORS.select do |key, value|
+      value[:parent] == @current_sector_id
+    end
   end
 
   def browse_sector_child(sector_parent, sector)
