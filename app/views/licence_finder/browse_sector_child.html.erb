@@ -6,11 +6,7 @@
       <% if @sectors.empty? %>
         <p>No sectors</p>
       <% else %>
-      <ul>
-        <% @sectors.each do |sector| %>
-          <li><%= sector.name %></li>
-        <% end %>
-      </ul>
+          <%= render :partial => "sector_navigation", :locals => { :from => "sector_child" } %>
       <% end %>
     </div>
   </article>

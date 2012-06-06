@@ -6,11 +6,7 @@
       <% if @sectors.empty? %>
         <p>No sectors</p>
       <% else %>
-      <ul>
-        <% @sectors.each do |sector| %>
-          <li><%= link_to sector.name, browse_sector_child_path(:sector_parent => @sector.public_id, :sector => sector.public_id) %></li>
-        <% end %>
-      </ul>
+         <%= render :partial => "sector_navigation", :locals => { :from => "sector" } %>
       <% end %>
     </div>
   </article>
