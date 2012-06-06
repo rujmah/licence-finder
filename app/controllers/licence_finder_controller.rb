@@ -58,22 +58,42 @@ class LicenceFinderController < ApplicationController
     setup_questions [@sectors, @activities, [@location.titleize]]
   end
 
+  # FIXME: is there some Ruby/Railsism I can use to factor out these
+  # nil/empty variables?
   def browse_sector_index
     # return list of top-level sectors
+    @current_sector = nil
+    @parent_sector = nil
+
     @sectors = Sector.find_layer1_sectors().to_a
+    @child_sectors = []
+    @grandchild_sectors = []
+
+    render "browse_sectors"
  end
 
   def browse_sector
     # return list of children of "sector"
-    @sector = Sector.find_by_public_id(params[:sector])
-    @sectors = @sector.children
+    @current_sector = Sector.find_by_public_id(params[:sector])
+    @parent_sector = nil
+
+    @sectors = Sector.find_layer1_sectors().to_a
+    @child_sectors = @current_sector.children
+    @grandchild_sectors = []
+
+    render "browse_sectors"
   end
 
   def browse_sector_child
     # return list of children of "sector"
-    @sector = Sector.find_by_public_id(params[:sector])
-    @sectors = @sector.children
-    @parent = Sector.find_by_public_id(params[:sector_parent])
+    @current_sector = Sector.find_by_public_id(params[:sector])
+    @parent_sector = Sector.find_by_public_id(params[:sector_parent])
+
+    @sectors = Sector.find_layer1_sectors().to_a
+    @child_sectors = @parent_sector.children
+    @grandchild_sectors = @current_sector.children
+
+    render "browse_sectors"
   end
 
   protected
