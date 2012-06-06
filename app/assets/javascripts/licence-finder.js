@@ -1,3 +1,10 @@
+/*globals $ */
+/*jslint
+ white: true,
+ sloppy: true,
+ browser: true,
+ vars: true
+*/
 $(function() {
     var pageName = window.location.pathname.split("/").pop();
 
@@ -20,7 +27,7 @@ $(function() {
     function createAddRemoveUrl(id) {
         var ids = extractIds(),
             params = extractParams();
-        if (ids.indexOf(id) == -1) {
+        if (ids.indexOf(id) === -1) {
             ids.push(id);
         } else {
             ids.splice(ids.indexOf(id), 1);
@@ -34,12 +41,12 @@ $(function() {
         var ids = extractIds(),
             params = extractParams(),
             next, query;
-        if (pageName == "sectors") {
+        if (pageName === "sectors") {
             next = "/activities";
             query = "sectors=" + ids.join("_");
         } else {
             next = "/location";
-            query = "sectors=" + params["sectors"] + "&activities=" + ids.join("_");
+            query = "sectors=" + params.sectors + "&activities=" + ids.join("_");
         }
 
         return window.location.pathname.replace("/"+pageName, next) + "?" + query;
@@ -75,30 +82,32 @@ $(function() {
         }
 
         // update links and forms to reflect the move
-        if (event.data.target == ".picked-items") {
+        if (event.data.target === ".picked-items") {
             $(".hint", target).removeClass("hint").addClass("hidden");
-            if ($("#next-step").length == 0) {
+            if ($("#next-step").length === 0) {
                 target.append('<a href="" class="button medium" id="next-step">Next step</a>');
             }
-        } else if (source.find("li").length == 0) {
+        } else if (source.find("li").length === 0) {
             $(".hidden", source).removeClass("hidden").addClass("hint");
             $("#next-step").remove();
         }
         $("#next-step").attr("href", createNextUrl());
-        if (pageName == "sectors") {
+        if (pageName === "sectors") {
             $("#search-again-button").attr("href", window.location.pathname + "?sectors=" + extractIds().join("_"));
             $("#hidden-sectors").attr("value", extractIds().join("_"));
         }
     }
 
     // event handler to add a list item to the picked list.
-    $(".search-picker").on("click", "li a",
-        {linkText: "Remove", target: ".picked-items", sortTarget: true},
-        swapper
-    );
+    $(".search-picker").on("click", "li a", {
+        linkText: "Remove",
+        target: ".picked-items",
+        sortTarget: true
+    }, swapper);
     // event handler to remove a list item from the picked list.
-    $(".picked-items").on("click", "li a",
-        {linkText: "Add", target: ".search-picker", sortTarget: pageName == "activities"},
-        swapper
-    );
+    $(".picked-items").on("click", "li a", {
+        linkText: "Add",
+        target: ".search-picker",
+        sortTarget: (pageName === "activities")
+    }, swapper);
 });
