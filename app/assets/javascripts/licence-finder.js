@@ -3,7 +3,8 @@
  white: true,
  sloppy: true,
  browser: true,
- vars: true
+ vars: true,
+ plusplus: true
 */
 $(function() {
     var pageName = window.location.pathname.split("/").pop();
@@ -110,4 +111,44 @@ $(function() {
         target: ".search-picker",
         sortTarget: (pageName === "activities")
     }, swapper);
+
+    // ajax sector navigation
+    $('#sector-navigation').on('click', 'li>a', function(e) {
+        e.preventDefault();
+        var $a = $(this),
+            url = $a.attr('href') + '.json',
+            name = $a.text(),
+            publicId = $a.data('public-id'),
+            i, l;
+        $.ajax(url, {
+            'dataType': 'json',
+            'cache': false,
+            'success': function(data) {
+                if (typeof data.sectors !== "undefined") {
+                    var children = data.sectors,
+                        name = $a.text(),
+                        $strong = $('<strong data-public-id="' + publicId + '" data-old-url="'+$a.attr('href')+'">' + name + '</strong>'),
+                        ul = $('<ul />');
+                    for (i=0, l=children.length; i<l; i++) {
+                        var leaf = children[i],
+                            elString;
+                        if (typeof leaf.url !== 'undefined') {
+
+                            elString = '<a data-public-id="'+leaf['public-id']+'" href="'+leaf.url+'">'+leaf.name+'</a>';
+                        }
+                        else {
+                            elString = leaf.name;
+                        }
+                        ul.append('<li>' + elString + '</li>');
+                    }
+                    $a.replaceWith($strong);
+                    ul.insertAfter($strong);
+                }
+            },
+            'error': function(obj, status, error) {
+                // TODO
+                console.log(error);
+            }
+        });
+    });
 });
