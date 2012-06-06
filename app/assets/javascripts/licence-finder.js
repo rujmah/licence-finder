@@ -113,6 +113,28 @@ $(function() {
     }, swapper);
 
     // ajax sector navigation
+    function toggleOpen(el) {
+        var publicId = el.data('public-id'),
+            url = el.attr('href');
+        if (el.is('strong')) {
+            url = el.data('old-url');
+            el.siblings('ul').remove();
+            var a = $('<a href="'+url+'" data-public-id="'+publicId+'">'+el.text()+'</a>');
+            el.replaceWith(a);
+        }
+    }
+    function cleanOpenLists(el) {
+        // removes all non-related "open" lists
+        var parentUrls = el.parentsUntil('#sector-navigation', 'ul');
+        if (parentUrls.length > 0) {
+
+        }
+        else {
+            $('#sector-navigation strong').each(function() {
+                toggleOpen($(this));
+            });
+        }
+    }
     $('#sector-navigation').on('click', 'li>a', function(e) {
         e.preventDefault();
         var $a = $(this),
@@ -125,6 +147,8 @@ $(function() {
             'cache': false,
             'success': function(data) {
                 if (typeof data.sectors !== "undefined") {
+                    cleanOpenLists($a);
+
                     var children = data.sectors,
                         name = $a.text(),
                         $strong = $('<strong data-public-id="' + publicId + '" data-old-url="'+$a.attr('href')+'">' + name + '</strong>'),
