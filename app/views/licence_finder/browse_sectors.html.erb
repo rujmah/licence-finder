@@ -8,19 +8,19 @@
       <% if @sectors.empty? %>
         <p>No sectors</p>
       <% else %>
-         <ul class="sector-navigation">
+         <ul id="sector-navigation">
            <% @sectors.each do |sector| %>
              <li>
                <% if (@current_sector && sector.public_id == @current_sector.public_id) || (@parent_sector && sector.public_id == @parent_sector.public_id) %>
                  <%= sector.name %>
                  <% if !@child_sectors.empty? %>
-                   <ul class="sector-navigation">
+                   <ul>
                      <% @child_sectors.each do |c_sector| %>
                        <li>
                          <% if (@current_sector && c_sector.public_id == @current_sector.public_id) || (@parent_sector && c_sector.public_id == @parent_sector.public_id) %>
                            <%= c_sector.name %>
                            <% if !@grandchild_sectors.empty? %>
-                             <ul class="sector-navigation">
+                             <ul>
                                <% @grandchild_sectors.each do |g_sector| %>
                                  <li><%= g_sector.name %></li>
                                <% end %>
