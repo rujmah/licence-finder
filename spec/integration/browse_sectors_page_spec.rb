@@ -18,11 +18,29 @@ describe "Sector browse page" do
     visit "/#{APP_SLUG}/browse-sectors"
 
     within "#sector-navigation" do
-      page.should have_css("li>a")
-      page.should have_content(@s1.name)
-      page.should have_content(@s6.name)
-      page.should_not have_content(@s3.name)
+      page.should have_css "li>a"
+      page.should have_content @s1.name
+      page.should have_content @s6.name
+      page.should_not have_content @s3.name
     end
+  end
+
+  specify "clicking through drills down the tree" do
+    visit "/#{APP_SLUG}/browse-sectors"
+
+    click_on @s1.name
+
+    page.should have_content @s2.name
+
+    click_on @s2.name
+
+    page.should have_content @s3.name
+  end
+
+  specify "viewing a deeper URL has the correct content" do
+    visit "/#{APP_SLUG}/browse-sectors/#{@s1.public_id}"
+
+    page.should have_content @s2.name
   end
 
   specify "clicking on sectors fetches children", :js => true do
