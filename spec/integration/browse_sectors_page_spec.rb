@@ -4,7 +4,7 @@ require 'capybara'
 # Make sure Capybara doesn't automatically refresh the page
 Capybara.automatic_reload = false
 
-describe "Sector browse page", :js => true do
+describe "Sector browse page" do
   before(:each) do
     @s1 = FactoryGirl.create(:sector, layer: 1, name: 'First top level')
     @s2 = FactoryGirl.create(:sector, layer: 2, name: 'First child', parents: [@s1])
@@ -25,7 +25,7 @@ describe "Sector browse page", :js => true do
     end
   end
 
-  specify "clicking on sectors fetches children" do
+  specify "clicking on sectors fetches children", :js => true do
     visit "/#{APP_SLUG}/browse-sectors"
 
     page.should have_content @s1.name
@@ -45,7 +45,7 @@ describe "Sector browse page", :js => true do
     page.should have_content @s3.name
   end
 
-  specify "clicking on sibling sectors collapses other sectors" do
+  specify "clicking on sibling sectors collapses other sectors", :js => true do
     visit "/#{APP_SLUG}/browse-sectors"
 
     click_on @s1.name
