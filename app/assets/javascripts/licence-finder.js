@@ -144,7 +144,7 @@ $(function() {
     }
 
     function initSectorBrowsing() {
-        $('#sector-navigation').on('click', 'li>a', function(e) {
+        $('#sector-navigation').on('click', 'li>a:not(.add)', function(e) {
             e.preventDefault();
             var $a = $(this),
                 url = $a.attr('href') + '.json',
