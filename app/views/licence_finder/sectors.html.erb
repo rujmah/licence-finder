@@ -23,6 +23,7 @@
       <%= text_field_tag "q", params[:q], id: "search-sectors" %>
       <%= submit_tag 'Search', class: "button", id: "search-button" %>
     <% end %>
+    <p>Or <%= link_to "browse activities and businesses", browse_sector_index_path(), {"id" => 'browse-sectors'} %>.</p>
   </div>
   <div class="business-sector-picked picked-items" aria-live="polite">
     <h3>Your chosen sectors</h3>
