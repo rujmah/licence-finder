@@ -113,7 +113,7 @@ $(function() {
     }, swapper);
 
     // ajax sector navigation
-    function toggleOpen(el) {
+    function collapseOpenList(el) {
         var publicId = el.data('public-id'),
             url = el.attr('href');
         if (el.is('strong')) {
@@ -131,14 +131,14 @@ $(function() {
                 var parents = $(this).closest('ul');
                 if (parents.length > 0) {
                     if (!$.inArray(parents[0], parentLists)) {
-                        toggleOpen($(this));
+                        collapseOpenList($(this));
                     }
                 }
             });
         }
         else {
             $('#sector-navigation strong').each(function() {
-                toggleOpen($(this));
+                collapseOpenList($(this));
             });
         }
     }
