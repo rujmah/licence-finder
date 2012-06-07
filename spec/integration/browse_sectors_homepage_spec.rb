@@ -25,4 +25,18 @@ describe "Browse sectors via licence finder homepage" do
     page.should have_content @s1.name
     page.should have_css 'ul#sector-navigation'
   end
+
+  specify "3rd level sectors should be able to be added to the sidebar", :js => true do
+    click_link "browse-sectors"
+    click_on @s1.name
+    click_on @s2.name
+
+    find('.picked-items').should_not have_content @s3.name
+
+    within "li[data-public-id='#{@s3.public_id}']" do
+      click_on "Add"
+    end
+
+    find('.picked-items').should have_content @s3.name
+  end
 end
