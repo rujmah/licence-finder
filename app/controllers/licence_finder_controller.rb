@@ -78,7 +78,7 @@ class LicenceFinderController < ApplicationController
     @parent_sector = nil
 
     @sectors = Sector.find_layer1_sectors().to_a
-    @child_sectors = @current_sector.children
+    @child_sectors = @current_sector.children.ascending(:name).to_a
     @grandchild_sectors = []
 
     render "browse_sectors"
@@ -90,8 +90,8 @@ class LicenceFinderController < ApplicationController
     @parent_sector = Sector.find_by_public_id(params[:sector_parent])
 
     @sectors = Sector.find_layer1_sectors().to_a
-    @child_sectors = @parent_sector.children
-    @grandchild_sectors = @current_sector.children
+    @child_sectors = @parent_sector.children.ascending(:name).to_a
+    @grandchild_sectors = @current_sector.children.ascending(:name).to_a
 
     render "browse_sectors"
   end
