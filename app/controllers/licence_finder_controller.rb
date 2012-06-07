@@ -65,7 +65,7 @@ class LicenceFinderController < ApplicationController
     @current_sector = nil
     @parent_sector = nil
 
-    @sectors = Sector.find_layer1_sectors().to_a
+    @sectors = Sector.find_layer1_sectors().ascending(:name).to_a
     @child_sectors = []
     @grandchild_sectors = []
 
@@ -77,7 +77,7 @@ class LicenceFinderController < ApplicationController
     @current_sector = Sector.find_by_public_id(params[:sector])
     @parent_sector = nil
 
-    @sectors = Sector.find_layer1_sectors().to_a
+    @sectors = Sector.find_layer1_sectors().ascending(:name).to_a
     @child_sectors = @current_sector.children.ascending(:name).to_a
     @grandchild_sectors = []
 
@@ -89,7 +89,7 @@ class LicenceFinderController < ApplicationController
     @current_sector = Sector.find_by_public_id(params[:sector])
     @parent_sector = Sector.find_by_public_id(params[:sector_parent])
 
-    @sectors = Sector.find_layer1_sectors().to_a
+    @sectors = Sector.find_layer1_sectors().ascending(:name).to_a
     @child_sectors = @parent_sector.children.ascending(:name).to_a
     @grandchild_sectors = @current_sector.children.ascending(:name).to_a
 
