@@ -153,12 +153,17 @@ li.done:hover .undo a {
   margin-left: -1.7em;
 }
 
-.current-question ul {
+.current-question ul ul {
+  margin: 0;
+}
+
+/* this is the multiple choice selector */
+.current-question ul.options {
   list-style: none;
   padding: 0;
 }
 
-.current-question ul li {
+.current-question ul.options li {
   line-height: 1.5em;
   margin: 0.5em 0;
 }

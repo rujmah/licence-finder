@@ -100,13 +100,13 @@ $(function() {
     }
 
     // event handler to add a list item to the picked list.
-    $(".search-picker").on("click", "li a", {
+    $(".search-container").on("click", "li[data-public-id] a.add", {
         linkText: "Remove",
         target: ".picked-items",
         sortTarget: true
     }, swapper);
     // event handler to remove a list item from the picked list.
-    $(".picked-items").on("click", "li a", {
+    $(".picked-items").on("click", "li[data-public-id] a", {
         linkText: "Add",
         target: ".search-picker",
         sortTarget: (pageName === "activities")
@@ -142,43 +142,76 @@ $(function() {
             });
         }
     }
-    $('#sector-navigation').on('click', 'li>a', function(e) {
+
+    function initSectorBrowsing() {
+        $('#sector-navigation').on('click', 'li>a', function(e) {
+            e.preventDefault();
+            var $a = $(this),
+                url = $a.attr('href') + '.json',
+                name = $a.text(),
+                publicId = $a.data('public-id'),
+                i, l;
+            $.ajax(url, {
+                'dataType': 'json',
+                'cache': false,
+                'success': function(data) {
+                    if (typeof data.sectors !== "undefined") {
+                        cleanOpenLists($a);
+
+                        var children = data.sectors,
+                            name = $a.text(),
+                            $strong = $('<strong data-public-id="' + publicId + '" data-old-url="'+$a.attr('href')+'">' + name + '</strong>'),
+                            ul = $('<ul />');
+                        for (i=0, l=children.length; i<l; i++) {
+                            var leaf = children[i],
+                                elString;
+                            if (typeof leaf.url !== 'undefined') {
+
+                                elString = '<a data-public-id="'+leaf['public-id']+'" href="'+leaf.url+'">'+leaf.name+'</a>';
+                            }
+                            else {
+                                elString = '<span class="sector-name">' + leaf.name + '</span> <a href="" class="add">Add</a>';
+                            }
+                            ul.append('<li data-public-id="'+leaf['public-id']+'">' + elString + '</li>');
+                        }
+                        $a.replaceWith($strong);
+                        ul.insertAfter($strong);
+                    }
+                },
+                'error': function(obj, status, error) {
+                    // TODO
+                    console.log(error);
+                }
+            });
+        });
+    }
+    initSectorBrowsing();
+
+    $('a#browse-sectors').on('click', function(e) {
         e.preventDefault();
         var $a = $(this),
-            url = $a.attr('href') + '.json',
-            name = $a.text(),
-            publicId = $a.data('public-id'),
-            i, l;
+            url = $a.attr('href') + '.json';
+
         $.ajax(url, {
-            'dataType': 'json',
-            'cache': false,
-            'success': function(data) {
-                if (typeof data.sectors !== "undefined") {
-                    cleanOpenLists($a);
-
-                    var children = data.sectors,
-                        name = $a.text(),
-                        $strong = $('<strong data-public-id="' + publicId + '" data-old-url="'+$a.attr('href')+'">' + name + '</strong>'),
-                        ul = $('<ul />');
-                    for (i=0, l=children.length; i<l; i++) {
-                        var leaf = children[i],
-                            elString;
-                        if (typeof leaf.url !== 'undefined') {
-
-                            elString = '<a data-public-id="'+leaf['public-id']+'" href="'+leaf.url+'">'+leaf.name+'</a>';
-                        }
-                        else {
-                            elString = leaf.name;
-                        }
-                        ul.append('<li>' + elString + '</li>');
+            dataType: 'json',
+            cache: false,
+            success: function(data) {
+                if (typeof data.sectors !== 'undefined') {
+                    var heading = $('<h3>All activities and businesses</h3>'),
+                        sectorList = $('<ul id="sector-navigation"></ul>'),
+                        i, l;
+                    for (i=0, l=data.sectors.length; i<l; i++) {
+                        var li = $('<li />'),
+                            a = $('<a />'),
+                            leaf = data.sectors[i];
+                        li.append(a);
+                        a.attr('href', leaf.url).attr('data-public-id', leaf['public-id']).text(leaf.name);
+                        sectorList.append(li);
                     }
-                    $a.replaceWith($strong);
-                    ul.insertAfter($strong);
+                    $a.parent().replaceWith(sectorList);
+                    heading.insertBefore(sectorList);
+                    initSectorBrowsing();
                 }
-            },
-            'error': function(obj, status, error) {
-                // TODO
-                console.log(error);
             }
         });
     });
