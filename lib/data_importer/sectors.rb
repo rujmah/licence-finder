@@ -8,6 +8,7 @@ class DataImporter::Sectors < DataImporter
   private
 
   def process_row(row)
+    counter = 0
     layer1 = Sector.find_by_correlation_id(row['LAYER1_OID'].to_i)
     unless layer1
       layer1 = Sector.new
@@ -15,6 +16,7 @@ class DataImporter::Sectors < DataImporter
       layer1.name = row['LAYER1']
       layer1.layer = 1
       layer1.safely.save!
+      counter += 1
     end
 
     layer2 = Sector.find_by_correlation_id(row['LAYER2_OID'].to_i)
@@ -24,6 +26,7 @@ class DataImporter::Sectors < DataImporter
       layer2.name = row['LAYER2']
       layer2.layer = 2
       layer2.safely.save!
+      counter += 1
     end
 
     l2parents = layer2.parents.to_a
@@ -39,12 +42,15 @@ class DataImporter::Sectors < DataImporter
       layer3.name = row['LAYER3']
       layer3.layer = 3
       layer3.safely.save!
+      counter += 1
     end
 
     l3parents = layer3.parents.to_a
     unless l3parents.include?(layer2)
       layer3.parents = l3parents + [layer2]
       layer3.safely.save!
+      counter += 1
     end
+    counter
   end
 end

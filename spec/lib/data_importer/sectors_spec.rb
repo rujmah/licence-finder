@@ -12,7 +12,9 @@ describe DataImporter::Sectors do
       Sector.find_by_correlation_id(1000011).should == nil
 
       importer = DataImporter::Sectors.new(source)
-      importer.run
+      silence_stream(STDOUT) do
+        importer.run
+      end
 
       imported_sector = Sector.find_by_correlation_id(1000011)
       imported_sector.correlation_id.should == 1000011
@@ -37,7 +39,9 @@ describe DataImporter::Sectors do
       Sector.find_by_correlation_id(1000011).should == nil
 
       importer = DataImporter::Sectors.new(source)
-      importer.run
+      silence_stream(STDOUT) do
+        importer.run
+      end
 
       Sector.where(correlation_id: 1000011).length.should == 1
     end
