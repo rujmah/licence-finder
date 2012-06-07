@@ -5,7 +5,8 @@
     <div class="search-container">
       <%= form_tag sectors_path, method: :get do %>
         <%= hidden_field_tag "sectors", params[:sectors], id: "hidden-sectors" %>
-        <%= text_field_tag "q", params[:q] %>
+        <label class="visuallyhidden" for="search-sectors">Search for sectors</label>
+        <%= text_field_tag "q", params[:q], id: "search-sectors" %>
         <%= submit_tag 'Search', class: "button", id: "search-button" %>
         <% if params[:q].present? %>
         <p>No results</p>
