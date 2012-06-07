@@ -125,9 +125,16 @@ $(function() {
     }
     function cleanOpenLists(el) {
         // removes all non-related "open" lists
-        var parentUrls = el.parentsUntil('#sector-navigation', 'ul');
-        if (parentUrls.length > 0) {
-
+        var parentLists = el.parentsUntil('#sector-navigation', 'ul');
+        if (parentLists.length > 0) {
+            $('#sector-navigation strong').each(function() {
+                var parents = $(this).closest('ul');
+                if (parents.length > 0) {
+                    if (!$.inArray(parents[0], parentLists)) {
+                        toggleOpen($(this));
+                    }
+                }
+            });
         }
         else {
             $('#sector-navigation strong').each(function() {
