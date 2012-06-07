@@ -391,10 +391,10 @@ li.upcoming h3 {
 .business-sector-picked, .business-activity-picked {
     background-color: #96c6e2;
     background-color: #CCE0D5;
-    float: left;
+    float: right;
     padding: 0.4em 5%;
     padding-bottom: 1.3em;
-    width: 35%;
+    width: 30%;
     margin-top:0.3em;
 }
 .business-activity-picked h3, .business-sector-picked h3 {
@@ -406,6 +406,10 @@ li.upcoming h3 {
     color: #305642;
     list-style-type: circle;
   list-style-image: url(https://djb1962t8apu5.cloudfront.net/static/bullet-disc-5px-ba51fe28267600cde9bfb058f0a4e6b6.gif);
+}
+
+.search-picker {
+  width: auto;
 }
 
 .search-picker li {
