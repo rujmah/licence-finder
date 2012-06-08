@@ -43,6 +43,16 @@ describe "Sector browse page" do
     page.should have_content @s2.name
   end
 
+  specify "sectors can be added from browse page" do
+    visit "/#{APP_SLUG}/browse-sectors/#{@s1.public_id}/#{@s2.public_id}"
+
+    click_on "Add"
+
+    within '.picked-items' do
+      page.should have_content @s3.name
+    end
+  end
+
   specify "clicking on sectors fetches children", :js => true do
     visit "/#{APP_SLUG}/browse-sectors"
 

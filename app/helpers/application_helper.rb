@@ -25,7 +25,8 @@ module ApplicationHelper
     new_params = params.dup
     new_params["#{key_name.pluralize}"] = extract_public_ids(new_params, key_name, model, block).join("_")
     new_params.delete("#{key_name}_ids")
-    link_to(name, new_params, extra_params)
+    # TODO: whitelist this params hash so we don't get random crap in there
+    link_to(name, url_for(new_params.merge(:action => key_name.pluralize)), extra_params)
   end
 
   def extract_public_ids(new_params, key_name, model, block)
