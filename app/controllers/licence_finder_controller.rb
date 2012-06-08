@@ -12,7 +12,7 @@ class LicenceFinderController < ApplicationController
 
   before_filter :extract_and_validate_sector_ids, :except => [:start, :sectors, :browse_sector_index, :browse_sector, :browse_sector_child, :browse_sector_grandchild]
   before_filter :extract_and_validate_activity_ids, :except => [:start, :sectors, :sectors_submit, :activities, :browse_sector_index, :browse_sector, :browse_sector_child, :browse_sector_grandchild]
-  before_filter :set_analytics_headers
+  after_filter :set_analytics_headers
 
   def start
   end
@@ -54,7 +54,8 @@ class LicenceFinderController < ApplicationController
     @sectors = Sector.find_by_public_ids(@sector_ids)
     @activities = Activity.find_by_public_ids(@activity_ids)
     @location = params[:location]
-    @licences = Licence.find_by_sectors_activities_and_location(@sectors, @activities, params[:location])
+    licences = Licence.find_by_sectors_activities_and_location(@sectors, @activities, params[:location])
+    @licences = LicenceFacade.create_for_licences(licences)
     setup_questions [@sectors, @activities, [@location.titleize]]
   end
 
@@ -130,10 +131,14 @@ class LicenceFinderController < ApplicationController
   end
 
   def set_analytics_headers
-    set_slimmer_headers(
+    headers = {
       format:      "licence-finder",
       proposition: "business",
       need_id:     "B90"
-    )
+    }
+    if @sectors and params[:q].present?
+      headers[:result_count] = @sectors.length
+    end
+    set_slimmer_headers(headers)
   end
 end

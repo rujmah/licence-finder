@@ -10,7 +10,14 @@
       <% else %>
       <ul>
         <% @licences.each do |licence| %>
-          <li><%= licence.name %></li>
+          <li>
+            <%- if licence.published? -%>
+              <%= link_to licence.title, licence.url %>
+              <p><%= licence.short_description %></p>
+            <%- else -%>
+              <%= licence.title %>
+            <%- end -%>
+          </li>
         <% end %>
       </ul>
       <% end %>

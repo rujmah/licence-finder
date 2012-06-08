@@ -48,7 +48,7 @@ describe "Licences page" do
     end
 
     within_section 'results' do
-      page.all('li').map(&:text).should == [
+      page.all('li').map(&:text).map(&:strip).should == [
         'Licence Four'
       ]
     end
@@ -57,6 +57,26 @@ describe "Licences page" do
     page.should_not have_selector(*selector_of_section('upcoming questions'))
 
     page.should_not have_content("No licences")
+  end
+
+  specify "seeing licence details from publisher on results page" do
+    publisher_has_licence :licence_identifier => @l1.public_id.to_s, :slug => 'licence-one', :title => 'Licence 1',
+          :licence_short_description => "Short description of licence"
+
+    visit licence_finder_url_for('licences', [@s1], [@a1, @a2], 'england')
+
+    within_section 'results' do
+      # should use the title from publisher, instead of local one
+      page.should have_content("Licence 1")
+      page.should_not have_content("Licence One")
+
+      within_section "list item containing Licence 1" do
+        page.should have_link("Licence 1", :href => "/licence-one")
+        page.should have_content("Short description of licence")
+      end
+
+      page.should have_content("Licence Two")
+    end
   end
 
   specify "going back to previous sections" do

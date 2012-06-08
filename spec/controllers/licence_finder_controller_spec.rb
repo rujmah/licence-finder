@@ -55,6 +55,31 @@ describe LicenceFinderController do
       assigns[:picked_sectors].should == [@s3, @s2]
     end
 
+    it "should return slimmer headers" do
+      $search.expects(:search).with("test query").returns([])
+      get :sectors, q: "test query"
+      response.headers["X-Slimmer-Need-ID"].should == "B90"
+      response.headers["X-Slimmer-Format"].should == "licence-finder"
+      response.headers["X-Slimmer-Proposition"].should == "business"
+      response.headers["X-Slimmer-Result-Count"].should == "0"
+    end
+
+    it "should not return result count if no query was provided" do
+      get :sectors
+      response.headers["X-Slimmer-Result-Count"].should be_nil
+    end
+
+    it "should return slimmer result count when available" do
+      @s1 = FactoryGirl.create(:sector, :name => "Alpha")
+      @s2 = FactoryGirl.create(:sector, :name => "Charlie")
+      @s3 = FactoryGirl.create(:sector, :name => "Bravo")
+
+      $search.expects(:search).with("test query").returns([@s1, @s2, @s3])
+
+      get :sectors, q: "test query"
+      response.should be_success
+      response.headers["X-Slimmer-Result-Count"].should == "3"
+    end
   end
 
   describe "GET 'activities'" do
@@ -106,6 +131,14 @@ describe LicenceFinderController do
         get :activities, :sectors => "1234_2345_3456", :activities => "1234_2345_3456"
 
         assigns[:picked_activities].should == [a1, a3, a2]
+      end
+
+      it "should core return slimmer headers but no result count" do
+        do_get
+        response.headers["X-Slimmer-Need-ID"].should == "B90"
+        response.headers["X-Slimmer-Format"].should == "licence-finder"
+        response.headers["X-Slimmer-Proposition"].should == "business"
+        response.headers["X-Slimmer-Result-Count"].should == nil
       end
     end
 
@@ -209,20 +242,22 @@ describe LicenceFinderController do
         Sector.stubs(:find_by_public_ids).returns(:some_sectors)
         Activity.stubs(:find_by_public_ids).returns(:some_activities)
         Licence.stubs(:find_by_sectors_activities_and_location).returns(:some_licences)
+        LicenceFacade.stubs(:create_for_licences).returns(:some_licence_facades)
       end
       def do_get
         get :licences, :sectors => '123_321', :activities => '234_432', :location => "northern_ireland"
       end
 
-      it "fetches the appropriate licences and assigns them to @licences" do
+      it "fetches the appropriate licences, wraps them in a facade and assigns them to @licences" do
         Sector.expects(:find_by_public_ids).with([123,321]).returns(:some_sectors)
         Activity.expects(:find_by_public_ids).with([234,432]).returns(:some_activities)
         Licence.expects(:find_by_sectors_activities_and_location).with(:some_sectors, :some_activities, "northern_ireland").returns(:some_licences)
+        LicenceFacade.expects(:create_for_licences).with(:some_licences).returns(:some_licence_facades)
         do_get
         assigns[:sectors].should == :some_sectors
         assigns[:activities].should == :some_activities
         assigns[:location].should == "northern_ireland"
-        assigns[:licences].should == :some_licences
+        assigns[:licences].should == :some_licence_facades
       end
 
       it "sets up the questions correctly" do

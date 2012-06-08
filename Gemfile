@@ -8,7 +8,13 @@ gem "bson_ext", "~> 1.5"
 gem "tire"
 
 gem 'router-client', '~> 3.0.1', :require => 'router'
-gem 'gds-api-adapters', '~> 0.0.47'
+
+if ENV['API_DEV']
+  gem 'gds-api-adapters', :path => '../gds-api-adapters'
+else
+  gem 'gds-api-adapters', '~> 0.0.49'
+end
+
 gem 'rummageable', '~> 0.1.3'
 
 if ENV['SLIMMER_DEV']
@@ -37,4 +43,5 @@ group :development, :test do
   gem 'mocha', '~> 0.11.3', :require => false
   gem 'capybara', '~> 1.1.2'
   gem 'capybara-webkit', '~> 0.12.1'
+  gem 'webmock', '~> 1.8.7', :require => false
 end
