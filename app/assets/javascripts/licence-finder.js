@@ -157,9 +157,9 @@ $(function() {
                 publicId = $a.data('public-id'),
                 i, l;
             $.ajax(url, {
-                'dataType': 'json',
-                'cache': false,
-                'success': function(data) {
+                dataType: 'json',
+                cache: false,
+                success: function(data) {
                     if (typeof data.sectors !== "undefined") {
                         cleanOpenLists($a);
 
@@ -170,15 +170,17 @@ $(function() {
                         for (i=0, l=children.length; i<l; i++) {
                             var leaf = children[i],
                                 elString;
-                            if (typeof leaf.url !== 'undefined') {
 
+                            if (typeof leaf.url !== 'undefined') {
                                 elString = '<a data-public-id="'+leaf['public-id']+'" href="'+leaf.url+'">'+leaf.name+'</a>';
                             }
                             else {
                                 elString = '<span class="sector-name">' + leaf.name + '</span> <a href="'+createAddRemoveUrl(leaf['public-id'])+'" class="add">Add</a>';
                             }
+
                             ul.append('<li data-public-id="'+leaf['public-id']+'">' + elString + '</li>');
                         }
+
                         $a.replaceWith($strong);
                         ul.insertAfter($strong);
                     }
