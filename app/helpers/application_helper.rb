@@ -22,16 +22,14 @@ module ApplicationHelper
 
   def create_add_remove_link(name, model, extra_params, &block)
     key_name = model_key_name(model)
-    new_params = params.dup
+    new_params = params.select {|k, v| %w(sectors activities).include? k.to_s }
     new_params["#{key_name.pluralize}"] = extract_public_ids(new_params, key_name, model, block).join("_")
-    new_params.delete("#{key_name}_ids")
-    # TODO: whitelist this params hash so we don't get random crap in there
     link_to(name, url_for(new_params.merge(:action => key_name.pluralize)), extra_params)
   end
 
   def extract_public_ids(new_params, key_name, model, block)
     block.call(
-      new_params.values_at("#{key_name}_ids").flatten.reject(&:nil?) + new_params["#{key_name.pluralize}"].to_s.split("_"),
+      new_params["#{key_name.pluralize}"].to_s.split("_"),
       [model.public_id.to_s]
     )
   end
