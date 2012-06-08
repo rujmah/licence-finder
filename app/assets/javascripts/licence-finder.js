@@ -188,18 +188,17 @@ $(function() {
                         $a.replaceWith($strong);
                         ul.insertAfter($strong);
                     }
-                },
-                'error': function(obj, status, error) {
-                    // TODO
-                    console.log(error);
                 }
             });
         });
     }
+
     initSectorBrowsing();
 
+    // dynamic sector browsing on sector homepage
     $('a#browse-sectors').on('click', function(e) {
         e.preventDefault();
+
         var $a = $(this),
             url = $a.attr('href') + '.json';
 
