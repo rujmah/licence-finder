@@ -18,8 +18,10 @@ $(function() {
     function extractParams() {
         var params = {};
         $(window.location.search.substr(1).split('&')).each(function(i, pair)  {
-            pair = pair.split('=');
-            params[pair[0]] = pair[1];
+            if (pair !== "") {
+                pair = pair.split('=');
+                params[pair[0]] = pair[1];
+            }
         });
 
         return params;
@@ -33,7 +35,10 @@ $(function() {
         } else {
             ids.splice(ids.indexOf(id), 1);
         }
-        params[pageName] = ids.join("_");
+
+        if (ids.length > 0) {
+            params[pageName] = ids.join("_");
+        }
 
         return window.location.pathname + "?" + $.param(params);
     }
