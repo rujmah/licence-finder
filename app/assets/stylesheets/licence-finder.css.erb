@@ -406,17 +406,33 @@ li.upcoming h3 {
   margin: 0;
   padding: 0;
   list-style: none;
+  overflow: hidden;
+  zoom: 1;
 }
 
 #sector-navigation li {
-  margin-bottom: 3px;
+  display: block;
+  clear: both; /* clear under floated "add" links */
+}
+
+#sector-navigation a,
+#sector-navigation span {
+  padding: 5px;
+  display: block;
+}
+
+#sector-navigation span {
+  float: left;
+}
+
+#sector-navigation li.open {
 }
 
 #sector-navigation li.open ul {
-  padding: 5px;
+  padding-left: 5px;
 }
 
-#sector-navigation li.open .add {
+#sector-navigation .add {
   float: right;
 }
 
