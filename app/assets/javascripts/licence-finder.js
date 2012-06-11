@@ -196,7 +196,8 @@ $(function() {
                         ul.insertAfter($openA);
 
 
-                        $openA.on('click', function() {
+                        $openA.on('click', function(e) {
+                            e.preventDefault();
                             collapseOpenList($(this));
                         });
                     }
