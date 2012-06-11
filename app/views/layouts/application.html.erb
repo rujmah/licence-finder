@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Licence Finder| GOV.UK</title>
+    <title><%= content_for?(:page_title) ? yield(:page_title) : "Licence Finder" %>| GOV.UK</title>
+    <meta name="description" content="<%= content_for?(:page_description) ? yield(:page_description) : "Licence Finder helps UK citizens find and apply for licences of all types." %>">
     <%= stylesheet_link_tag "licence-finder" %>
     <%= javascript_include_tag 'licence-finder', defer: true %>
     <%= yield :section_meta_tags %>
