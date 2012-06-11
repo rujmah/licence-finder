@@ -128,18 +128,20 @@ $(function() {
     function collapseOpenList(el) {
         var publicId = el.data('public-id'),
             url = el.attr('href');
-        if (el.is('strong')) {
+        if (el.is('li.open>a')) {
             url = el.data('old-url');
             el.siblings('ul').remove();
             var a = $('<a href="'+url+'" data-public-id="'+publicId+'">'+el.text()+'</a>');
             el.replaceWith(a);
+
+            a.parent().removeClass('open');
         }
     }
     function cleanOpenLists(el) {
         // removes all non-related "open" lists
         var parentLists = el.parentsUntil('#sector-navigation', 'ul');
         if (parentLists.length > 0) {
-            $('#sector-navigation strong').each(function() {
+            $('#sector-navigation li.open>a').each(function() {
                 var parents = $(this).closest('ul');
                 if (parents.length > 0) {
                     if (!$.inArray(parents[0], parentLists)) {
@@ -149,14 +151,14 @@ $(function() {
             });
         }
         else {
-            $('#sector-navigation strong').each(function() {
+            $('#sector-navigation li.open>a').each(function() {
                 collapseOpenList($(this));
             });
         }
     }
 
     function initSectorBrowsing() {
-        $('#sector-navigation').on('click', 'li>a:not(.add)', function(e) {
+        $('#sector-navigation').on('click', 'li:not(.open)>a:not(.add)', function(e) {
             e.preventDefault();
             var $a = $(this),
                 url = $a.attr('href') + '.json',
@@ -172,7 +174,7 @@ $(function() {
 
                         var children = data.sectors,
                             name = $a.text(),
-                            $strong = $('<strong data-public-id="' + publicId + '" data-old-url="' + $a.attr('href')+'">' + name + '</strong>'),
+                            $openA = $('<a href="" data-public-id="' + publicId + '" data-old-url="' + $a.attr('href')+'">' + name + '</a>'),
                             ul = $('<ul />');
                         for (i=0, l=children.length; i<l; i++) {
                             var leaf = children[i],
@@ -188,8 +190,15 @@ $(function() {
                             ul.append('<li data-public-id="' + leaf['public-id'] + '">' + elString + '</li>');
                         }
 
-                        $a.replaceWith($strong);
-                        ul.insertAfter($strong);
+                        $a.parent().addClass('open');
+
+                        $a.replaceWith($openA);
+                        ul.insertAfter($openA);
+
+
+                        $openA.on('click', function() {
+                            collapseOpenList($(this));
+                        });
                     }
                 }
             });
