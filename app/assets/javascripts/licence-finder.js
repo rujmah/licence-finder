@@ -7,7 +7,22 @@
  plusplus: true
 */
 $(function() {
-    var pageName = window.location.pathname.split("/").pop();
+
+    // $('el:bottom-offscreen') will return true if the element's
+    // bottom box border is off the screen
+    $.expr.filters['bottom-offscreen'] = function(el) {
+        var $window = $(window),
+            $el = $(el),
+            bottomOfWindow = ($window.scrollTop() + $window.height()),
+            elBottom = $el.offset().top + $el.height();
+        return (elBottom > bottomOfWindow);
+    };
+
+
+
+
+    var pageName = window.location.pathname.split("/").pop(),
+        browseUrl;
 
     function extractIds() {
         return $.makeArray(
@@ -174,7 +189,7 @@ $(function() {
 
                         var children = data.sectors,
                             name = $a.text(),
-                            $openA = $('<a href="" data-public-id="' + publicId + '" data-old-url="' + $a.attr('href')+'">' + name + '</a>'),
+                            $openA = $('<a data-public-id="' + publicId + '" data-old-url="' + $a.attr('href')+'">' + name + '</a>'),
                             ul = $('<ul />');
                         for (i=0, l=children.length; i<l; i++) {
                             var leaf = children[i],
@@ -190,16 +205,35 @@ $(function() {
                             ul.append('<li data-public-id="' + leaf['public-id'] + '">' + elString + '</li>');
                         }
 
+                        // insert correct parent URL on open links
+                        var $parentLink = $a.closest('ul'),
+                            parentUrl = browseUrl;
+
+                        if ($parentLink.first()) {
+                            var parentLink = $parentLink.first().siblings('a').first();
+                            if (parentLink.length > 0) {
+                                parentUrl = $(parentLink[0]).attr('data-old-url');
+                            }
+                        }
+
                         $a.parent().addClass('open');
+                        $openA.attr('href', parentUrl);
 
                         $a.replaceWith($openA);
                         ul.insertAfter($openA);
-
 
                         $openA.on('click', function(e) {
                             e.preventDefault();
                             collapseOpenList($(this));
                         });
+
+                        // scroll to top of page, taking top bar and a
+                        // few extra pixels into account
+                        if ($openA.siblings('ul:first').is(':bottom-offscreen')) {
+                            $('html, body').animate({
+                                scrollTop: $openA.offset().top - $('#global-header').height() - 15
+                            }, 500);
+                        }
                     }
                 }
             });
@@ -214,6 +248,8 @@ $(function() {
 
         var $a = $(this),
             url = $a.attr('href') + '.json';
+
+        browseUrl = $a.attr('href');
 
         $.ajax(url, {
             dataType: 'json',
