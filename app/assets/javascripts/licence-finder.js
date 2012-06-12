@@ -111,7 +111,7 @@ $(function() {
         if (event.data.target === ".picked-items") {
             $(".hint", target).removeClass("hint").addClass("hidden");
             if ($("#next-step").length === 0) {
-                target.append('<a class="button medium" id="next-step">Next step</a>');
+                target.append('<div class="button-container"><a class="button medium" id="next-step">Next step</a></div>');
             }
         } else if (source.find("li").length === 0) {
             $(".hidden", source).removeClass("hidden").addClass("hint");
@@ -256,7 +256,7 @@ $(function() {
             cache: false,
             success: function(data) {
                 if (typeof data.sectors !== 'undefined') {
-                    var heading = $('<h3>All activities and businesses</h3>'),
+                    var heading = $('<h3>All activities and businesses:</h3>'),
                         sectorList = $('<ul id="sector-navigation"></ul>'),
                         i, l;
                     for (i=0, l=data.sectors.length; i<l; i++) {
