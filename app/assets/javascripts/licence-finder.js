@@ -126,7 +126,7 @@ $(function() {
     }
 
     // event handler to add a list item to the picked list.
-    $(".search-container").on("click", "li[data-public-id] a.add", {
+    $(".search-container, .browse-container").on("click", "li[data-public-id] a.add", {
         linkText: "Remove",
         target: ".picked-items",
         sortTarget: true
